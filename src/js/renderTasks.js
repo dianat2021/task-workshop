@@ -1,5 +1,6 @@
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { database } from "./firebaseConfig";
+import toggleCompletion from "./toggleCompletion";
 
 const renderTasks = async (tasks = "all") => {
   const tableBody = document.querySelector(".table__body");
@@ -18,7 +19,6 @@ const renderTasks = async (tasks = "all") => {
 
   renderCollection.forEach((doc, index) => {
     const task = doc.data();
-    console.log(task);
 
     // Creating elements
     const tableRow = document.createElement("tr");
@@ -70,6 +70,14 @@ const renderTasks = async (tasks = "all") => {
     crossTaskButton.classList.add("tools__button");
     deleteTaskButton.classList.add("tools__button");
     editTaskButton.classList.add("tools__button");
+
+    // Add event listeners
+    crossTaskButton.addEventListener("click", () => {
+      toggleCompletion(doc.id, task.isCompleted);
+      console.log(task);
+
+      tableRow.classList.toggle("task--completed");
+    });
   });
 };
 
