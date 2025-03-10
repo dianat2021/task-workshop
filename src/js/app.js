@@ -4,6 +4,7 @@ import { editTask } from "./editTasks";
 import filterTasksByMonth from "./filterTasks";
 import { closeDeleteModal, closeModal, openModal } from "./modal";
 import renderTasks from "./renderTasks";
+import validateForm from "./validation";
 
 // Selecting DOM elements
 const formModal = document.querySelector(".form-modal");
@@ -32,6 +33,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
+  formSubmissionFeedback.classList.remove("form--invalid-input", "form--valid");
+  if (!validateForm()) {
+    formSubmissionFeedback.classList.add("form--invalid-input");
+    formSubmissionFeedback.textContent =
+      "Please complete the form before submitting it!";
+    setTimeout(() => {
+      formSubmissionFeedback.textContent = "";
+    }, 3000);
+    return;
+  }
+
   if (!appState.editState) {
     addTasks(
       titleInput.value,
@@ -45,9 +57,18 @@ form.addEventListener("submit", (e) => {
     appState.editState = null;
   }
   renderTasks();
+  form.reset();
+  formSubmissionFeedback.classList.remove("form--invalid-input");
+  formSubmissionFeedback.classList.add("form--valid");
+  formSubmissionFeedback.textContent = "Task has been submitted successfully!";
+  setTimeout(() => {
+    formSubmissionFeedback.textContent = "";
+  }, 3000);
 });
 
 filterSelect.addEventListener("change", (e) => {
   const selectedValue = e.target.value;
   filterTasksByMonth(selectedValue);
 });
+
+console.log(validateForm());
