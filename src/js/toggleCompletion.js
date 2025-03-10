@@ -1,18 +1,24 @@
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { database } from "./firebaseConfig";
-import renderTasks from "./renderTasks";
 
-const toggleCompletion = async (id, isCompleted) => {
-  console.log(isCompleted);
-
+const toggleCompletion = async (id, taskRow) => {
   try {
-    const taskToComplete = doc(database, "tasks", id);
-    console.log(taskToComplete);
+    const taskToCross = doc(database, "tasks", id);
+    const taskSnapshot = await getDoc(taskToCross);
 
-    await updateDoc(taskToComplete, { isCompleted: !isCompleted });
-    console.log(isCompleted);
+    const currentIsCompletedState = taskSnapshot.data().isCompleted;
+    const updatedIsCompletedProperty = !currentIsCompletedState;
+
+    updateDoc(taskToCross, {
+      isCompleted: updatedIsCompletedProperty,
+    });
+    if (updatedIsCompletedProperty) {
+      taskRow.classList.add("task--completed");
+    } else {
+      taskRow.classList.remove("task--completed");
+    }
   } catch (error) {
-    console.log(error, "Error updating task completion!");
+    console.log(error, "Error updating the isComplete property");
   }
 };
 

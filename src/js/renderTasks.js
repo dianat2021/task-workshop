@@ -1,7 +1,8 @@
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, doc, getDocs, orderBy, query } from "firebase/firestore";
 import { database } from "./firebaseConfig";
+import { openDeleteModal } from "./modal";
 import toggleCompletion from "./toggleCompletion";
-
+toggleCompletion;
 const renderTasks = async (tasks = "all") => {
   const tableBody = document.querySelector(".table__body");
   tableBody.innerHTML = "";
@@ -15,6 +16,18 @@ const renderTasks = async (tasks = "all") => {
     renderCollection = tasksSnapshot.docs;
   } else {
     renderCollection = tasks;
+  }
+
+  if (renderCollection.length === 0) {
+    const emptyCollectionRow = document.createElement("tr");
+    const emptyCollectionCell = document.createElement("td");
+    emptyCollectionCell.textContent = "No tasks to display!";
+    tableBody.classList.add("table__body--empty");
+    tableBody.append(emptyCollectionRow);
+    emptyCollectionRow.append(emptyCollectionCell);
+    return;
+  } else {
+    tableBody.classList.remove("table__body--empty");
   }
 
   renderCollection.forEach((doc, index) => {
@@ -73,10 +86,10 @@ const renderTasks = async (tasks = "all") => {
 
     // Add event listeners
     crossTaskButton.addEventListener("click", () => {
-      toggleCompletion(doc.id, task.isCompleted);
-      console.log(task);
-
-      tableRow.classList.toggle("task--completed");
+      toggleCompletion(doc.id, tableRow);
+    });
+    deleteTaskButton.addEventListener("click", () => {
+      openDeleteModal(doc.id, task.title);
     });
   });
 };
