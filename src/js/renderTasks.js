@@ -10,7 +10,7 @@ const renderTasks = async (tasks = "all") => {
 
   let renderCollection;
 
-  if ((tasks = "all")) {
+  if (tasks === "all") {
     const taskCollection = collection(database, "tasks");
     const q = query(taskCollection, orderBy("createdAt"));
     const tasksSnapshot = await getDocs(q);
@@ -18,6 +18,7 @@ const renderTasks = async (tasks = "all") => {
   } else {
     renderCollection = tasks;
   }
+  console.log(renderCollection);
 
   if (renderCollection.length === 0) {
     const emptyCollectionRow = document.createElement("tr");
